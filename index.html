@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode with BWIP-JS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
+        integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+
+</head>
+
+<body>
+
+
+    <div class="wrapper ">
+
+        <div class="hero">
+            <header class="navbar navbar-expand px-3">
+                <a href="#" class="text-decoration-none">
+                    <h4>Bakery shop</h4>
+                </a>
+            </header>
+            <div class="form-wrapper">
+                <div class="row g-0 px-3 w-100">
+                    <div class="col-md-9 pe-md-4">
+                        <div class="header-form h-100">
+                            <div class="row h-100 align-items-center">
+                                <div class="col-lg px-2">
+                                    <div class="form-group mb-3">
+                                        <label for="">Text:</label>
+                                        <input type="text" id="text" onchange="generateSingleBarcode()"
+                                            class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg px-2">
+                                    <div class="form-group mb-3">
+                                        <label for="">No. Label:</label>
+                                        <input type="text" id="noOfLabel" onchange="generateSingleBarcode()"
+                                            class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg px-2">
+                                    <div class="form-group mb-3">
+                                        <label for="">Header:</label>
+                                        <input type="text" id="header" onchange="generateSingleBarcode()"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg px-2">
+                                    <div class="form-group mb-3">
+                                        <label for="">Mfg. Date:</label>
+                                        <input type="date" id="mfgDate" onchange="generateSingleBarcode()"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg px-2">
+                                    <div class="form-group mb-3">
+                                        <label for="">Exp. Date:</label>
+                                        <input type="date" id="expDate" onchange="generateSingleBarcode()"
+                                            class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <p>Generate Barcodes</p>
+                                        <button class="btn btn-dark btn-sm" onclick="generateList()">Generete
+                                            Barcodes</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 pe-0">
+                        <div class="label-card h-100">
+                            <h5 id="headerShow">Bar code text</h5>
+                            <div class="bar-code">
+                                <canvas id="barcodeCanvas"></canvas>
+                            </div>
+                            <p id="seriel">1 2 3 4 5 6 7 8</p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <p>Mfg. Date: <span id="mfgDateshow"></span></p>
+                                <p>Exp. Date: <span id="expDateshow"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bwip-js@3.0.4/dist/bwip-js.min.js"></script>
+    <script>
+
+
+        function generateList() {
+            const text = document.getElementById('text').value;
+            const header = document.getElementById('header').value;
+            const noOfLabel = document.getElementById('noOfLabel').value;
+            const mfgDate = document.getElementById('mfgDate').value;
+            const expDate = document.getElementById('expDate').value;
+            if (!mfgDate || !expDate) {
+                alert('Please fill All Fields!');
+                return;
+            }
+
+          let serialNo = "1 2 3 4 5 6 7 8";
+
+            const barcodeData = `Text: ${text} | Header: ${header} | Serial No.: ${serialNo} | MFG: ${mfgDate} | EXP: ${expDate}`;
+
+            localStorage.setItem("barcodes", JSON.stringify({ "count": noOfLabel,   "barCodeData": barcodeData, "serialNo": serialNo, "header": header, "mfgDate": mfgDate, "expDate": expDate }));
+
+            window.location.href = "barcodes.html";
+
+
+
+        }
+
+
+        generateSingleBarcode();
+        function generateSingleBarcode() {
+            const text = document.getElementById('text').value;
+            const header = document.getElementById('header').value;
+            const noOfLabel = document.getElementById('noOfLabel').value;
+            const mfgDate = document.getElementById('mfgDate').value;
+            const expDate = document.getElementById('expDate').value;
+
+            const headerTextShow = document.getElementById('headerShow');
+            const mfgDateshow = document.getElementById('mfgDateshow');
+            const expDateshow = document.getElementById('expDateshow');
+
+            headerTextShow.textContent = header;
+            mfgDateshow.textContent = mfgDate;
+            expDateshow.textContent = expDate;
+
+            const barcodeData = `Text: ${text} | Header: ${header} | MFG:${mfgDate} | EXP:${expDate}`;
+
+
+            try {
+                // Generate the barcode
+                bwipjs.toCanvas('barcodeCanvas', {
+                    bcid: 'code128',
+                    text: barcodeData,
+                });
+            } catch (err) {
+                console.error('Barcode generation failed:', err);
+            }
+
+
+        }
+
+    </script>
+</body>
+
+</html>

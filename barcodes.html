@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode with BWIP-JS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
+        integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        html {
+            width: 8in;
+            height: 11in;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        #barcodes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .bar-code {
+            width: 180px;
+            height: auto;
+            /* padding: 5px; */
+            margin-bottom: 3px;
+            position: relative;
+        }
+
+        
+    </style>
+</head>
+
+<body>
+
+
+    <div class="wrapper ">
+
+        <div class="barCodes">
+
+            <div id="barcodes">
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bwip-js@3.0.4/dist/bwip-js.min.js"></script>
+    <script>
+        generateBarcode();
+        function generateBarcode() {
+
+            let barcodes = JSON.parse(localStorage.getItem("barcodes"));
+            let barcodesEl = document.getElementById("barcodes");
+
+            console.log(barcodes.mfgDate);
+
+            if (barcodes) {
+
+
+                const barcodeData = barcodes.barCodeData;
+
+                let date = barcodes.mfgDate;
+                const [year, month, day] = date.split('-');
+
+
+
+
+                for (let i = 1; i <= barcodes.count; i++) {
+
+                    let serialNo = `${day}${month}${year}00${i}`;
+                    barcodes.serialNo = serialNo;
+
+                    // Create a  for each barcode
+                    let newEl = document.createElement("div");
+                    newEl.className = "bar-code";
+
+                    let canvasId = `barcodeCanvas-${i}`;
+                    newEl.innerHTML = `
+                                    <h5 id="headerShow">${barcodes.header}</h5>
+                                    <div class="d-flex justify-content-center">
+                                        <canvas id="${canvasId}"></canvas>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-center  dates">
+                                        <p class="me-2">MFG:<span id="mfgDateshow">${barcodes.mfgDate}</span></p>
+                                        <p >EXP:<span id="expDateshow">${barcodes.expDate}</span></p>
+                                    </div>
+                                    `;
+                    barcodesEl.appendChild(newEl);
+
+                    try {
+                        // Generate the barcode
+                        bwipjs.toCanvas(canvasId, {
+                            bcid: 'code128',
+                            text: barcodeData,
+                        });
+                    } catch (err) {
+                        console.error('Barcode generation failed:', err);
+                    }
+
+                    window.print();
+                    localStorage.removeItem("barcodes")
+                }
+            } else {
+                alert("No barcode found!")
+            }
+
+
+
+
+        }
+    </script>
+</body>
+
+</html>
